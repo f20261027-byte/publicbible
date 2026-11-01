@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公股銀行面試攻略與互動模擬演練平台</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- RecordRTC 第三方錄音庫 (保證 Google Sites 與跨平台相容性) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        bank: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                        },
+                        gold: {
+                            500: '#d97706',
+                            600: '#b45309',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .recording-pulse {
+            animation: pulse-ring 1.5s infinite ease-in-out;
+        }
+
+        /* 隱藏 Google Sites 內嵌產生的預設浮水印與標籤 */
+        [data-google-container],
+        .goog-te-gadget,
+        div[style*="z-index: 1000"],
+        a[href*="sites.google.com/site"],
+        a[href*="google.com/sites"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 font-sans flex flex-col selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('question-bank')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fa-solid font-bold fa-building-columns"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg sm:text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-amber-200">
+                            公股勝經
+                        </span>
+                        <span class="text-xs text-slate-400 block -mt-1 hidden sm:block">臺灣公股銀行面試攻防與實戰平台</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2">
+                    <button id="nav-bank-btn" onclick="switchTab('question-bank')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-blue-600 text-white shadow-sm">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>必勝題庫與解析</span>
+                    </button>
+                    <button id="nav-sim-btn" onclick="switchTab('interview-sim')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>模擬面試實戰</span>
+                    </button>
+                    <button id="nav-strategy-btn" onclick="switchTab('bank-strategy')" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800">
+                        <i class="fa-solid fa-chess"></i>
+                        <span>八大行庫攻略</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+
+        <!-- ================= PAGE 1: 題庫與擬答解析 ================= -->
+        <section id="page-question-bank" class="space-y-6">
+            <!-- Banner / Intro -->
+            <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-3xl">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold mb-3">
+                        <i class="fa-solid fa-star"></i>
+                        <span>最佳面試應答導向</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">精選八大公股高頻面試考古題</h1>
+                    <p class="mt-2 text-slate-300 text-sm sm:text-base">深入剖析面試官真實意圖、STAR最佳回應範例與地雷禁忌。掌握關鍵，自信應答！</p>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 space-y-4">
+                <!-- Search Bar -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="qb-search-input" placeholder="搜尋題目關鍵字、銀行名稱、或能力指標（例如：洗錢防制、業績壓力、團隊衝突）..."
+                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm transition-all"
+                           oninput="filterQuestions()">
+                </div>
+
+                <!-- Filters Row -->
+                <div class="flex flex-wrap gap-2 items-center text-xs sm:text-sm">
+                    <span class="text-slate-500 font-medium mr-2"><i class="fa-solid fa-filter mr-1"></i>分類篩選：</span>
+                    <button class="qb-cat-btn px-3 py-1.5 rounded-full border border-blue-600 bg-blue-600 text-white font-medium" onclick="setCategoryFilter('all', this)">全部題目</button>
+                    <button class="qb-cat-btn px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 font-medium" onclick="setCategoryFilter('personal', this)">個人特質與動機</button>
+                    <button class="qb-cat-btn px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 font-medium" onclick="setCategoryFilter('professional', this)">金融專業與時事</button>
+                    <button class="qb-cat-btn px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 font-medium" onclick="setCategoryFilter('behavioral', this)">情境行為題</button>
+                    <button class="qb-cat-btn px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 font-medium" onclick="setCategoryFilter('stress', this)">壓力測試與考驗</button>
+                </div>
+            </div>
+
+            <!-- Question Cards Grid / Container -->
+            <div id="questions-list" class="space-y-4">
+                <!-- JS will render question cards here -->
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 2: 模擬面試實戰 (Interactive Interview) ================= -->
+        <section id="page-interview-sim" class="hidden space-y-6">
+            <!-- Setup State vs Active Practice State -->
+            <div id="sim-setup-card" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">設定您的模擬面試情境</h2>
+                    <p class="text-slate-500 text-sm mt-1">選擇目標公股銀行與題數，系統將隨機抽考並進行擬真倒數計時與錄音演練。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <!-- Bank Select -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">1. 選擇目標銀行</label>
+                        <select id="sim-bank-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="all">全公股行庫（綜合抽題）</option>
+                            <option value="臺灣銀行">臺灣銀行 (龍頭/穩定/政策)</option>
+                            <option value="土地銀行">土地銀行 (土建融/不動產專業)</option>
+                            <option value="兆豐銀行">兆豐銀行 (外匯/國際金融/薪資頂尖)</option>
+                            <option value="合作金庫">合作金庫 (房貸市占大/農漁會通路)</option>
+                            <option value="第一銀行">第一銀行 (ESG/中小企業/海外獲利)</option>
+                            <option value="華南銀行">華南銀行 (數位轉型/企金活潑)</option>
+                            <option value="彰化銀行">彰化銀行 (理財轉型/歷史悠久)</option>
+                            <option value="臺灣企銀">臺灣企銀 (中小企業融資專長)</option>
+                        </select>
+                    </div>
+
+                    <!-- Question Count & Timer -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">2. 面試題數與限時</label>
+                        <select id="sim-count-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="3">精簡體驗 (3 題 - 題/1分鐘)</option>
+                            <option value="5" selected>標準情境 (5 題 - 題/1分鐘)</option>
+                            <option value="8">深度模擬 (8 題 - 題/1分鐘)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="mt-8 text-center">
+                    <button onclick="startSimulation()" class="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all text-base transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-play mr-2"></i>開始模擬面試演練
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Practice Interface (Initially Hidden) -->
+            <div id="sim-active-card" class="hidden space-y-6">
+                <!-- Status Top Bar -->
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span id="sim-bank-badge" class="px-3 py-1 bg-blue-100 text-blue-800 font-bold rounded-full text-xs">兆豐銀行</span>
+                        <span id="sim-progress-text" class="text-sm font-semibold text-slate-600">問題 1 / 5</span>
+                    </div>
+
+                    <!-- Timer Badge & Control Buttons -->
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center space-x-2 bg-slate-900 text-amber-400 px-4 py-2 rounded-lg font-mono font-bold text-lg shadow-inner">
+                            <i class="fa-regular fa-clock text-amber-400"></i>
+                            <span id="sim-timer-display">01:00</span>
+                        </div>
+                        <div class="flex space-x-1">
+                            <button id="sim-timer-toggle-btn" onclick="toggleTimer()" title="播放/暫停計時" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm transition-colors flex items-center justify-center">
+                                <i id="sim-timer-toggle-icon" class="fa-solid fa-pause"></i>
+                            </button>
+                            <button onclick="restartTimer()" title="重設計時 (01:00)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm transition-colors flex items-center justify-center">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="abortSimulation()" class="text-xs text-rose-600 hover:text-rose-800 font-medium px-3 py-1.5 rounded border border-rose-200 hover:bg-rose-50">
+                        <i class="fa-solid fa-xmark mr-1"></i>結束模擬
+                    </button>
+                </div>
+
+                <!-- Current Question Card -->
+                <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-blue-300 bg-blue-900/50 px-2.5 py-1 rounded border border-blue-700/50" id="sim-q-cat">
+                            個人特質與動機
+                        </span>
+                        <span class="text-xs text-slate-400" id="sim-q-banks">考點：臺灣銀行、第一銀行</span>
+                    </div>
+
+                    <h2 class="text-xl sm:text-2xl font-bold leading-relaxed text-amber-100" id="sim-q-title">
+                        「請用 1 分鐘自我介紹，並說明為什麼在眾多公股銀行中選擇報考我們銀行？」
+                    </h2>
+
+                    <!-- Examiner Hint / Context (Foldable Accordion) -->
+                    <div class="border border-slate-700/80 rounded-xl overflow-hidden bg-slate-800/60">
+                        <button onclick="toggleSimIntentDetail(this)" class="w-full p-3.5 text-left font-bold font-sans text-amber-400 text-xs sm:text-sm flex justify-between items-center hover:bg-slate-800 transition-colors">
+                            <span><i class="fa-solid fa-eye mr-2"></i>查看面試官真實考意圖</span>
+                            <i id="sim-intent-icon" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                        </button>
+                        <div id="sim-intent-body" class="hidden p-4 border-t border-slate-700/60 text-xs sm:text-sm text-slate-300 bg-slate-900/40 font-sans">
+                            <p id="sim-q-intent">考察你對該行業務特色（如ESG、中小企業放款、外匯等）的了解程度，以及忠誠度與職涯穩定度。</p>
+                        </div>
+                    </div>
+
+                    <!-- STAR & Sample Answer (Foldable Accordion) -->
+                    <div class="border border-slate-700/80 rounded-xl overflow-hidden bg-slate-800/60">
+                        <button onclick="toggleSimHint()" class="w-full p-3.5 text-left font-bold font-sans text-emerald-400 text-xs sm:text-sm flex justify-between items-center hover:bg-slate-800 transition-colors">
+                            <span><i class="fa-solid fa-wand-magic-sparkles text-emerald-400 mr-2"></i>看示範擬答與應答亮點</span>
+                            <i id="sim-hint-icon" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                        </button>
+                        <div id="sim-hint-body" class="hidden p-4 border-t border-slate-700/60 text-xs sm:text-sm text-slate-300 bg-slate-900/40 font-sans">
+                            <div id="sim-star-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Recording / Practice Area -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                    <div class="text-center space-y-2">
+                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-microphone text-blue-600 mr-2"></i>內建語音錄練與即時回放</h3>
+                        <p class="text-xs text-slate-500">點擊下方麥克風按鈕即可直接開始錄影演練並聽取回放。</p>
+                    </div>
+
+                    <!-- Built-in Recorder Interactive Block -->
+                    <div class="bg-gradient-to-br from-slate-50 to-blue-50/40 rounded-xl p-6 flex flex-col items-center justify-center border border-slate-200 text-center space-y-4">
+                        <div id="recording-status" class="text-xs text-slate-500 font-medium">
+                            點擊紅色麥克風開始錄音
+                        </div>
+
+                        <!-- Mic Record Button -->
+                        <button id="mic-record-btn" onclick="toggleBuiltInRecording()" class="w-16 h-16 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-2xl shadow-lg transition-all transform active:scale-95 focus:outline-none">
+                            <i id="mic-icon" class="fa-solid fa-microphone"></i>
+                        </button>
+
+                        <!-- Audio Playback (Initially Hidden) -->
+                        <div id="audio-playback-container" class="hidden w-full max-w-md pt-2 space-y-2">
+                            <div class="text-xs font-bold text-slate-600 flex items-center justify-center">
+                                <i class="fa-solid fa-circle-play text-emerald-500 mr-1.5"></i>錄音回放試聽：
+                            </div>
+                            <audio id="audio-playback" controls class="w-full rounded-lg shadow-inner bg-slate-100"></audio>
+                        </div>
+                    </div>
+
+                    <!-- Self Rating & Next Question Controls -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                        <div class="flex items-center space-x-2 text-sm">
+                            <span class="text-slate-600 font-medium">回答自我評分：</span>
+                            <div class="flex space-x-1 text-amber-400 text-lg cursor-pointer" id="rating-stars">
+                                <i class="fa-regular fa-star" onclick="rateSelf(1)"></i>
+                                <i class="fa-regular fa-star" onclick="rateSelf(2)"></i>
+                                <i class="fa-regular fa-star" onclick="rateSelf(3)"></i>
+                                <i class="fa-regular fa-star" onclick="rateSelf(4)"></i>
+                                <i class="fa-regular fa-star" onclick="rateSelf(5)"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3 w-full sm:w-auto">
+                            <button onclick="nextSimQuestion()" class="flex-1 sm:flex-initial px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all text-sm flex items-center justify-center">
+                                <span>下一題</span>
+                                <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Summary Modal / Screen (When Completed) -->
+            <div id="sim-summary-card" class="hidden bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-200 text-center space-y-6">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">恭喜完成模擬面試！</h2>
+                    <p class="text-slate-500 text-sm mt-1">您已經完成了一輪寶貴的實戰演練，口條與自信度大幅提升！</p>
+                </div>
+
+                <div class="max-w-md mx-auto bg-slate-50 rounded-xl p-4 border border-slate-200 flex justify-around text-center">
+                    <div>
+                        <span class="text-xs text-slate-400 block">演練總題數</span>
+                        <span id="summary-total-q" class="text-2xl font-bold text-slate-800">5</span>
+                    </div>
+                    <div class="border-r border-slate-200"></div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">平均自我評分</span>
+                        <span id="summary-avg-score" class="text-2xl font-bold text-amber-500">4.2 / 5</span>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-center space-x-4">
+                    <button onclick="resetSimulation()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg text-sm transition-all">
+                        <i class="fa-solid fa-rotate-left mr-2"></i>再次練習
+                    </button>
+                    <button onclick="switchTab('question-bank')" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-all">
+                        <i class="fa-solid fa-book-open mr-2"></i>複習考題庫
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 3: 八大行庫攻略與比較 ================= -->
+        <section id="page-bank-strategy" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10">
+                    <h1 class="text-2xl font-black text-white"><i class="fa-solid fa-chess mr-2 text-amber-400"></i>台灣八大公股銀行面試密技與核心文化</h1>
+                    <p class="text-slate-300 text-sm mt-1">掌握各大行庫面試官最在意的定位關鍵字、優勢業務與答題眉角。</p>
+                </div>
+            </div>
+
+            <!-- 8 Banks Grid Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="banks-grid">
+                <!-- Javascript will inject Bank cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>公股勝經 - 專為台灣公股銀行招考打造的面試攻防與語音演練平台</p>
+            <p class="text-slate-500">涵蓋：臺灣銀行、土地銀行、兆豐銀行、合作金庫、第一銀行、華南銀行、彰化銀行、臺灣企銀</p>
+        </div>
+    </footer>
+
+    <!-- JS Logic Block -->
+    <script>
+        /* ================= DATABASE & QUESTION DATA ================= */
+        const QUESTION_DATABASE = [
+            {
+                id: 1,
+                category: 'personal',
+                categoryLabel: '個人特質與動機',
+                title: '請用 1 分鐘進行自我介紹。',
+                banks: ['臺灣銀行', '兆豐銀行', '第一銀行', '土地銀行', '合作金庫', '華南銀行', '彰化銀行', '臺灣企銀'],
+                intent: '考官希望在極短時間內了解你的學經歷背景、核心優勢、性格特質以及與金融臨櫃/企金職位的契合度。',
+                sampleAnswer: '考官好，我畢業於財金系，具備信託、外匯與洗錢防制等專業證照。在學期間我曾於零售業實習，累積了豐富的客訴處理與第一線服務經驗，培養出極佳的溝通韌性與細心度。此外，我平時持續追蹤最新金融時事與數位金融趨勢。我擁有良好的抗壓性與團隊合作精神，期待能將專業知識與服務熱忱帶入貴行，迅速成為具即戰力的優質行員。',
+                trap: '切忌照單宣科唸履歷表或花太多時間講家庭背景。應聚焦於「與職務相關的能力、經驗與個人優勢」。'
+            },
+            {
+                id: 101,
+                category: 'personal',
+                categoryLabel: '個人特質與動機',
+                title: '為什麼選擇報考我們銀行而非其他公股？',
+                banks: ['臺灣銀行', '兆豐銀行', '第一銀行', '土地銀行', '合作金庫', '華南銀行', '彰化銀行', '臺灣企銀'],
+                intent: '考察你對該行特定業務優勢（如ESG、中小企業放款、外匯等）的了解程度，以及忠誠度與職涯穩定度（避免集郵式報考）。',
+                sampleAnswer: '在眾多公股行庫中，貴行近年在推動ESG綠色金融與數位轉型上的表現令人印象深刻。特別是貴行在海外據點的佈局與中小企業授信的扎實基礎，與我未來的職涯發展目標高度契合。我希望能發揮自己的金融專業與語言優勢，在貴行這個兼具穩健與創新的平台上長期深耕，陪伴貴行共同成長。',
+                trap: '忌回答：「因為公股銀行比較穩定不會倒」、「福利好」、「爸媽叫我考的」。務必連結該銀行的特定業務特色（如：兆豐外匯強、土銀不動產龍頭、一銀ESG特優）。'
+            },
+            {
+                id: 201,
+                category: 'professional',
+                categoryLabel: '金融專業與時事',
+                title: '銀行的業務有哪些？你對哪一塊最感興趣？',
+                banks: ['臺灣銀行', '土地銀行', '合作金庫', '第一銀行', '華南銀行', '彰化銀行', '兆豐銀行', '臺灣企銀'],
+                intent: '考核應徵者對銀行實務運作的整體架構了解程度，並觀察其職涯規劃是否與報考職缺吻合。',
+                sampleAnswer: '商業銀行的主要業務可分為四大核心：第一是存款與匯兌（存放款基礎業務）；第二是授信與放款（包含個人房貸、信貸與企業融資）；第三是外匯與國際金融業務；第四則是財富管理與交叉銷售（信託、基金、保險、信用卡等）。其中我對「企金授信與中小企業融資」最感興趣，因為這不僅需要扎實的財報分析能力，更能實際參與企業成長，為行庫創造穩定利差與手續費收入。',
+                trap: '切忌回答太模糊或只講「存提款」，這會顯得對銀行業缺乏全貌認識。應展現對銀行主要獲利來源（利差、手續費）的理解。'
+            },
+            {
+                id: 2,
+                category: 'behavioral',
+                categoryLabel: '情境行為題',
+                title: '在過去學校或工作經驗中，是否曾遇到奧客或極難溝通的客戶？你如何處理？',
+                banks: ['合作金庫', '華南銀行', '彰化銀行', '臺灣企銀'],
+                intent: '公股臨櫃常面對高齡者或情緒激動客戶，考官要確認你的EQ、情緒平復能力與合規原則。',
+                sampleAnswer: '過去在零售業工讀時，曾遇到顧客因不符退換貨規定而在現場大聲叫囂。我需要在不違反公司規定、同時安撫客戶情緒並維持現場秩序的前提下解決問題。當時我先將客戶引導至安靜的會客區遞上溫水，採取傾聽並展現同理心，等客戶冷靜後再清楚解釋法令與補救方案。最終成功讓客戶理解並接受替代方案，客戶離去前還讚許我的服務態度，該經驗讓我具備極佳的溝通韌性。',
+                trap: '切忌批評客戶「胡理取鬧」或「我不理他叫主管來」。必須表現出先處理心情，再處理事情的專業度。'
+            },
+            {
+                id: 202,
+                category: 'stress',
+                categoryLabel: '壓力測試與考驗',
+                title: '銀行現在都要銷售金融商品（如信用卡、保險、基金），你可以接受嗎？',
+                banks: ['第一銀行', '兆豐銀行', '華南銀行', '合作金庫', '彰化銀行', '臺灣企銀'],
+                intent: '考官在確認應徵者是否了解現代公股銀行均有手續費收入（WM/Cross-selling）指標，避免招考到排斥業績銷售的「老古板」心態行員。',
+                sampleAnswer: '我完全可以接受，並將銷售視為專業服務的延伸！現代銀行已從單純的作業櫃檯轉型為全方位金融解決方案提供者。對我而言，銷售不是盲目推銷，而是「顧問式服務」——在符合KYC（了解你的客戶）前提下，依客戶需求推薦適當的信用卡或理財商品，幫助客戶達成資產增值或生活便利，同時為行庫帶來手續費收入，這是雙贏的過程。',
+                trap: '千萬不可露出排斥或勉強的態度（如：「如果一定要賣我也只能接受」）。必須展現主動性與對顧問式銷售的正確認知。'
+            },
+            {
+                id: 203,
+                category: 'stress',
+                categoryLabel: '壓力測試與考驗',
+                title: '若某項金融商品你覺得很爛/條件不好，而主管又要求你必須向客戶推銷，你會怎麼做？',
+                banks: ['第一銀行', '兆豐銀行', '華南銀行', '彰化銀行'],
+                intent: '高度考驗「合規誠信（Fair Treating of Customers）」與「組織服從性/溝通技巧」之間的極致平衡與道德判斷。',
+                sampleAnswer: '首先，我會先深入研讀產品說明書與市場條件，因為每個金融商品都有不同的風險收益特徵，看似不吸引人的商品可能適合風險偏好極低或有特定避險/稅務需求的客戶。其次，我絕對會恪守「公平待客原則」與KYC規範，絕不對客戶誇大不實或隱瞞風險。若評估該商品確實不適合眼前客戶，我會向主管報告該客戶的真實風險屬性，並嘗試推薦其他更符合客戶需求的替代商品，在合規前提下爭取業績。',
+                trap: '切忌回答「直接跟客戶說這商品很爛叫他不要買」（缺乏商業溝通）或「管他的主管叫我賣就硬賣」（違反金融消費者保護法與合規誠信）。'
+            },
+            {
+                id: 204,
+                category: 'professional',
+                categoryLabel: '金融專業與時事',
+                title: '生成式 AI（如 ChatGPT）技術發展迅速，你認為 AI 會不會淘汰銀行員？',
+                banks: ['第一銀行', '華南銀行', '兆豐銀行', '臺灣銀行', '合作金庫'],
+                intent: '考驗應徵者對金融科技（FinTech）趨勢的敏感度，以及對「人際溫度與複雜金融決策」等不可替代價值的洞察力。',
+                sampleAnswer: '我認為 AI 不會淘汰銀行員，但「懂得運用 AI 的銀行員」會淘汰不願改變的人！AI 擅長快速處理重複性資料、初階客服與風險數據演算，能大幅提升銀行的營運效率；然而，銀行業的核心本質在於「信任與人際溫度」。高資產客戶的財富管理、複雜的企業授信決策、以及客訴中的情緒安撫與同理心，都是 AI 無法取代的。未來的行員應定位為「AI 的指揮官」，將機械式作業交給 AI，把更多時間投入在深度客戶關係維繫與價值創造上。',
+                trap: '不可極端回答「完全不會」或「會，未來銀行都不需要人了」。應論述 AI 為賦能工具，強調人類行員在信任、同理心與複雜決策上的不可替代性。'
+            },
+            {
+                id: 205,
+                category: 'stress',
+                categoryLabel: '壓力測試與考驗',
+                title: '現在我手邊有 300 萬，請推薦一個金融產品說服我購買，而且希望是「抗通膨、低風險、高報酬」的產品。',
+                banks: ['第一銀行', '兆豐銀行', '華南銀行', '彰化銀行', '合作金庫', '臺灣企銀'],
+                intent: '考驗「投資不可能三角（風險、收益、流動性）」的基本金融常識、合規溝通能力與情境應變話術。',
+                sampleAnswer: '非常感謝您的信任！在為您規劃前，必須先跟您分享金融市場的鐵律：世界上並沒有「同時兼具低風險、高報酬又抗通膨」的單一產品。若有人這樣宣稱，往往伴隨著不對稱的隱藏風險。不過，針對您 300 萬的資金與抗通膨需求，我建議採用「資產配置組合」來達成目標：100萬放在高利定存或投資級債券（建立低風險防禦底座）；150萬配置於優質高股息ETF或全球藍籌股票基金（長期對抗通膨並獲取資本增長）；剩餘50萬保留為靈活性高的現金流。這樣的組合能在控管整體風險的前提下，為您追求高於通膨的合理長期回報。',
+                trap: '切忌為了討好考官/客戶而胡亂推薦某個具體高風險商品並宣稱它「低風險高報酬」（嚴重違反合規與KYC！）。務必直言金融不可能三角，並以「資產配置（Asset Allocation）」觀念回應。'
+            },
+            {
+                id: 102,
+                category: 'personal',
+                categoryLabel: '個人特質與動機',
+                title: '為什麼想考公股銀行，而不是去薪水或行銷資源可能更多的民營銀行？',
+                banks: ['臺灣銀行', '兆豐銀行', '第一銀行', '土地銀行', '合作金庫', '華南銀行', '彰化銀行', '臺灣企銀'],
+                intent: '考察你對公股與民營文化差異的認知，以及你的性格是否適合公股（看重誠信、穩健經營、長期深耕、永續社會責任）。',
+                sampleAnswer: '民營銀行確實充滿活力與短期爆發力，但我個人的職涯價值觀更契合公股銀行的「穩健經營與永續發展」理念。公股行庫歷史悠久、客戶信任度極高，除了商業獲利外，更肩負政策性金融、中小企業扶持與綠色永續（ESG）等社會責任。在這樣的體制下，我可以不必為了追求極端的短期KPI而進行過度推銷，而是能真正以「客戶長期的利益與信任」為核心提供顧問服務。此外，公股銀行健全的培訓機制與透明的升遷體系，也讓我能安心規劃長遠的金融職涯。',
+                trap: '切忌回答「因為民營加班太殘忍/壓力太大」、「公股比較好偷懶/等領退休金」。也不要過度貶低民營銀行，應將焦點放在「公股的穩健誠信、客戶信任度與長期永續責任」上。'
+            },
+            {
+                id: 3,
+                category: 'professional',
+                categoryLabel: '金融專業與時事',
+                title: '如果顧客對於我們推行的數位銀行（如數位帳戶、 App）有疑慮，嫌麻煩不想辦，你會如何推廣？',
+                banks: ['第一銀行', '華南銀行', '兆豐銀行', '彰化銀行'],
+                intent: '考核你的金融商品推廣能力、耐心，以及公股銀行推動數位轉型（Digital Transformation）的執行力。',
+                sampleAnswer: '許多習慣臨櫃的長輩或客戶常對手機銀行抱持資安疑慮或操作恐懼。我的目標是讓客戶化被動為主動，體驗數位金融帶來的便利。我會用最簡單的切入點，例如『用App轉帳免手續費』或『即時通知防止刷卡詐騙』，並親自手把手拿展示機引導點擊，順利協助客戶完成開戶與首刷，讓客戶感受到我們的數位服務既安全又貼心。',
+                trap: '不能直接放棄顧客，也不可強迫推銷。強調「誘因溝通」與「資安保障」是關鍵。'
+            },
+            {
+                id: 4,
+                category: 'stress',
+                categoryLabel: '壓力測試與考驗',
+                title: '進入公股銀行後是有業績壓力（信用卡、基金、房貸、保險）的，你確定自己能扛得住嗎？',
+                banks: ['兆豐銀行', '第一銀行', '華南銀行', '合庫'],
+                intent: '打破應徵者對公股「等領退休金」的幻想，測試你對銷售（Cross-selling）的心理準備。',
+                sampleAnswer: '我非常清楚現代銀行業早已從純服務轉型為全方位金融解決方案提供者，因此我將業績目標視為驗證自己專業與客戶信任度的量化指標。我平時維持運動習慣培養抗壓性，並會主動研讀產品知識，運用『顧問式銷售』而非盲目推銷。在過往經驗中，我曾設定目標並順利達成120%的KPI，我非常有信心能將業績轉化為成就感。',
+                trap: '千萬不要回答「我比較想做純臨櫃交易不喜歡銷售」。要正面向迎業績挑戰，並強調顧問式服務。'
+            },
+            {
+                id: 5,
+                category: 'professional',
+                categoryLabel: '金融專業與時事',
+                title: '請談談你對防制洗錢與打擊資恐（AML/CFT）在銀行第一線實務作業的看法？',
+                banks: ['臺灣銀行', '兆豐銀行', '土地銀行', '臺灣企銀'],
+                intent: '考驗合規觀念（Compliance）與風險意識，尤其兆豐事件後公股對洗錢防制極為重視。',
+                sampleAnswer: '洗錢防制是銀行業的生命線，不僅關乎法令遵循，更是維持國際金融信譽的基石。身為第一線行員，我是KYC（認識你的客戶）的第一道防線，我會嚴格執行資產來源確認與異常交易監控（如突發大額提存、頻繁開戶），並兼顧客戶體驗進行適切問詢，確保行庫營運合規無虞，落實金融正義與風險控管。',
+                trap: '不可說「手續太繁瑣會影響臨櫃效率」。必須將合規與KYC放在第一位。'
+            },
+            {
+                id: 6,
+                category: 'behavioral',
+                categoryLabel: '情境行為題',
+                title: '若你在盤點現金時發現帳實不符（結帳短少或盈餘），你的處理標準流程是什麼？',
+                banks: ['臺灣銀行', '土地銀行', '合作金庫', '彰化銀行'],
+                intent: '測試細心度、誠實操守與是否遵循嚴謹的標準作業程序（SOP）。',
+                sampleAnswer: '臨櫃結帳時若發現帳面金額與實體現金不符，首要原則是誠實回報，絕不可自行補足或隱瞞。我會立即複算、核對當日所有傳票與交易明細，確認是否有打錯金額，並依SOP第一時間通報主管。接著透過嚴謹調閱監視器與帳務覆核找出原因，秉持誠信與廉潔精神守護行庫資產。',
+                trap: '絕對禁止說：「我自己拿口袋的錢補齊就好了」。這是極度嚴重的道德地雷與違規行為！'
+            },
+            {
+                id: 7,
+                category: 'stress',
+                categoryLabel: '壓力測試與考驗',
+                title: '如果需要加班你可以接受嗎？',
+                banks: ['臺灣銀行', '兆豐銀行', '第一銀行', '土地銀行', '合作金庫', '華南銀行', '彰化銀行', '臺灣企銀'],
+                intent: '考察你的工作態度、責任感以及時間管理與配合度。公股銀行在月初月底、結算期或專案期間常有加班需求，考官希望確定你具備團隊合作意識，不會隨意抱怨。',
+                sampleAnswer: '我完全可以配合！我理解銀行業在月底結算、開辦新業務或特定專案期間，為確保帳務準確與業務順暢，加班是必要的職責。在平時工作時，我會透過優化作業流程與提升效率，盡可能在正規工作時間內完成任務；但當團隊或行庫有業務需求時，我一定會以團隊目標為優先，全力配合加班完成工作。',
+                trap: '切忌直接反問：「請問加班費怎麼算？」或表現出防禦抗拒態度；也不要只會盲目回答「我非常喜歡加班」，應強調「平時提升效率」與「必要時全力配合團隊」的平衡點。'
+            }
+        ];
+
+        const BANK_PROFILES = [
+            {
+                name: '臺灣銀行',
+                tag: '公股龍頭 / 政策任務 / 穩定厚實',
+                color: 'border-[#800020]',
+                btnColor: 'bg-[#800020] hover:bg-[#600018]',
+                desc: '國營銀行龍頭，承擔新臺幣發行、公庫業務等政策性任務。面試極度看重誠信、穩定性與法令遵循。',
+                benefits: ['國營最高13%行優存款', '平均考核年終約4.4個月', '完整調薪升遷制度', '國營極高就業穩定度'],
+                keyTopics: ['中央公庫業務', 'ESG綠色融資', '黃金存摺', '防制洗錢KYC']
+            },
+            {
+                name: '土地銀行',
+                tag: '不動產專業 / 國營金雞母',
+                color: 'border-[#005a2b]',
+                btnColor: 'bg-[#005a2b] hover:bg-[#00421f]',
+                desc: '唯一辦理不動產信用專業國營銀行。建融與房貸市占高。面試需展現對不動產授信與風險控管的敏銳度。',
+                benefits: ['國營13%行優存款', '穩定4.4個月考績年終', '員工房貸優惠利率', '健全培訓與進修補助'],
+                keyTopics: ['土建融與房贷放款', '信託2.0', '綠建築融資', '資產品質控管']
+            },
+            {
+                name: '兆豐銀行',
+                tag: '外匯霸主 / 國際金融 / 高薪首選',
+                color: 'border-[#58111a]',
+                btnColor: 'bg-[#58111a] hover:bg-[#3d0b12]',
+                desc: '公股獲利王與外匯業務龍頭，海外據點豐富。面試極度看重外語能力、國際視野與洗錢防制（AML）標準。',
+                benefits: ['公股獲利王年終上看6~8+個月', '海外派駐津貼與高外匯加給', '行優存款與優惠房貸', '每兩年全額高階體檢'],
+                keyTopics: ['外匯與國際聯貸', 'OBU與海外分行', '洗錢防制嚴格標準', '專業證照強度']
+            },
+            {
+                name: '合作金庫',
+                tag: '通路最多 / 農漁會關係 / 企金強固',
+                color: 'border-[#0d4722]',
+                btnColor: 'bg-[#0d4722] hover:bg-[#072d15]',
+                desc: '全台營業據點最多，具備極強的全民金融服務基礎與農漁會關係。面試偏好親和力強、具服務熱忱之人才。',
+                benefits: ['平均年終穩定5~7個月', '員工持股信託獎勵補助', '完整的育兒津貼與生育補助', '全台據點多可優先就近調動'],
+                keyTopics: ['中小企業授信', '信託與安養金融', '房貸與消費金融', '親和力與顧客關係']
+            },
+            {
+                name: '第一銀行',
+                tag: 'ESG標竿 / 中小企業放款 / 數位化',
+                color: 'border-[#004d25]',
+                btnColor: 'bg-[#004d25] hover:bg-[#003318]',
+                desc: '永續金融與ESG標竿，中小企業授信績效優異。面試看重數位思維、銷售熱忱與永續發展認知。',
+                benefits: ['平均年終上看7~8個月', '業界首創高額生育與育兒津貼', '員工持股信託與儲蓄信託', '數位與證照取得獎勵金'],
+                keyTopics: ['ESG永續金融', 'iLEO數位帳戶', '中小企業融資', '財富管理推動']
+            },
+            {
+                name: '華南銀行',
+                tag: '數位轉型 / 企業金融 / 靈活創新',
+                color: 'border-[#e60012]',
+                btnColor: 'bg-[#e60012] hover:bg-[#b3000e]',
+                desc: '積極推動數位轉型與金融科技創新。面試看重主動積極性、交叉銷售意願與專業學習能力。',
+                keyTopics: ['Snugny數位帳戶', '企業聯貸與貿融', '財富管理轉型', '靈活抗壓性'],
+                benefits: ['績效優秀年終上看6~7個月', '員工優惠貸款與行優存款', '完善證照與語文進修獎勵', '健康檢查與多元社團補助']
+            },
+            {
+                name: '彰化銀行',
+                tag: '歷史悠久 / 理財轉型 / 靈活授信',
+                color: 'border-[#ff1e27]',
+                btnColor: 'bg-[#ff1e27] hover:bg-[#cc0f16]',
+                desc: '百年傳承行庫，近年積極深化財富管理與數位金融。面試注重行員的綜合行銷實力與誠信操守。',
+                benefits: ['平均年終約5~6.5個月', '員工優惠信貸與房貸', '生育津貼與急難救助金', '外派海外分行輪休制度'],
+                keyTopics: ['柴寶數位帳戶', '財富管理交叉銷售', '企金與供應鏈金融', '風險控管']
+            },
+            {
+                name: '臺灣企銀',
+                tag: '中小企業融資專家 / 專利權質押',
+                color: 'border-orange-500',
+                btnColor: 'bg-orange-500 hover:bg-orange-600',
+                desc: '國內唯一中小企業專業銀行，協助新創與中小企業取得資金。面試重視對財報分析與企金授信的理解。',
+                benefits: ['平均年終穩定5~6.5個月', '員工儲蓄信託與持股補助', '專業證照考取全額補助', '友善托育與高額生育津貼'],
+                keyTopics: ['中小企業專利融資', '新創產業輔導', '青年創業貸款', '企業放款評估']
+            }
+        ];
+
+        /* ================= APP STATE MANAGEMENT ================= */
+        let currentFilterCategory = 'all';
+        let currentSearchQuery = '';
+
+        // Simulation State
+        let simQuestions = [];
+        let simCurrentIndex = 0;
+        let simTimerInterval = null;
+        let simTimeRemaining = 60; // 1 min per question
+        let simIsTimerRunning = false;
+        let simRatings = [];
+
+        // Recording State
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordRtcInstance = null;
+        let isRecording = false;
+
+        /* ================= INITIALIZATION & TAB SWITCHING ================= */
+        window.onload = function() {
+            renderQuestionBank();
+            renderBankProfiles();
+        };
+
+        function switchTab(tabId) {
+            document.getElementById('page-question-bank').classList.add('hidden');
+            document.getElementById('page-interview-sim').classList.add('hidden');
+            document.getElementById('page-bank-strategy').classList.add('hidden');
+
+            document.getElementById('nav-bank-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800";
+            document.getElementById('nav-sim-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800";
+            document.getElementById('nav-strategy-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-slate-800";
+
+            if (tabId === 'question-bank') {
+                document.getElementById('page-question-bank').classList.remove('hidden');
+                document.getElementById('nav-bank-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-blue-600 text-white shadow-sm";
+            } else if (tabId === 'interview-sim') {
+                document.getElementById('page-interview-sim').classList.remove('hidden');
+                document.getElementById('nav-sim-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-blue-600 text-white shadow-sm";
+            } else if (tabId === 'bank-strategy') {
+                document.getElementById('page-bank-strategy').classList.remove('hidden');
+                document.getElementById('nav-strategy-btn').className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-amber-600 text-white shadow-sm";
+            }
+        }
+
+        /* ================= PAGE 1: QUESTION BANK LOGIC ================= */
+        function renderQuestionBank() {
+            const container = document.getElementById('questions-list');
+            container.innerHTML = '';
+
+            const filtered = QUESTION_DATABASE.filter(q => {
+                const matchCategory = (currentFilterCategory === 'all') || (q.category === currentFilterCategory);
+                const query = currentSearchQuery.toLowerCase();
+                const matchSearch = !query || 
+                    q.title.toLowerCase().includes(query) ||
+                    q.sampleAnswer.toLowerCase().includes(query) ||
+                    q.intent.toLowerCase().includes(query) ||
+                    q.banks.some(b => b.toLowerCase().includes(query));
+                return matchCategory && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl p-8 text-center border border-slate-200 text-slate-500">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                        <p class="font-medium">找不到符合條件的面試題目，請嘗試更換關鍵字或類別。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(q => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow";
+                card.innerHTML = `
+                    <div class="p-5 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-md border border-blue-100">
+                                ${q.categoryLabel}
+                            </span>
+                            <div class="flex flex-wrap gap-1">
+                                ${q.banks.map(b => `<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[11px] rounded">${b}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                            ${q.title}
+                        </h3>
+
+                        <!-- 面試官真實考意圖 (折疊/展開) -->
+                        <div class="border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                            <button onclick="toggleCardSection(this)" class="w-full p-3 text-left font-bold font-sans text-amber-700 text-xs sm:text-sm flex justify-between items-center hover:bg-slate-100 transition-colors">
+                                <span><i class="fa-solid fa-eye mr-2"></i>查看面試官真實考意圖</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div class="hidden p-3.5 border-t border-slate-200 text-xs sm:text-sm text-slate-700 bg-white font-sans">
+                                <p>${q.intent}</p>
+                            </div>
+                        </div>
+
+                        <!-- 示範擬答 (折疊/展開) -->
+                        <div class="border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                            <button onclick="toggleCardSection(this)" class="w-full p-3 text-left font-bold font-sans text-slate-700 text-xs sm:text-sm flex justify-between items-center hover:bg-slate-100 transition-colors">
+                                <span><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2"></i>看示範擬答與應答亮點</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div class="hidden p-4 border-t border-slate-200 text-xs sm:text-sm text-slate-700 bg-white leading-relaxed space-y-2 font-sans">
+                                <p class="text-slate-800 font-medium">${q.sampleAnswer}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleCardSection(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('.fa-chevron-down');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function setCategoryFilter(cat, btn) {
+            currentFilterCategory = cat;
+            document.querySelectorAll('.qb-cat-btn').forEach(b => {
+                b.className = "qb-cat-btn px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50 text-slate-700 font-medium";
+            });
+            btn.className = "qb-cat-btn px-3 py-1.5 rounded-full border border-blue-600 bg-blue-600 text-white font-medium";
+            renderQuestionBank();
+        }
+
+        function filterQuestions() {
+            currentSearchQuery = document.getElementById('qb-search-input').value.trim();
+            renderQuestionBank();
+        }
+
+        /* ================= PAGE 2: INTERVIEW SIMULATION LOGIC ================= */
+        function startSimulation() {
+            const selectedBank = document.getElementById('sim-bank-select').value;
+            const count = parseInt(document.getElementById('sim-count-select').value);
+
+            let available = [...QUESTION_DATABASE];
+            if (selectedBank !== 'all') {
+                available = available.filter(q => q.banks.includes(selectedBank));
+                if (available.length < count) {
+                    available = [...QUESTION_DATABASE];
+                }
+            }
+
+            // Shuffle array
+            simQuestions = available.sort(() => 0.5 - Math.random()).slice(0, count);
+            simCurrentIndex = 0;
+            simRatings = new Array(count).fill(0);
+
+            document.getElementById('sim-setup-card').classList.add('hidden');
+            document.getElementById('sim-summary-card').classList.add('hidden');
+            document.getElementById('sim-active-card').classList.remove('hidden');
+
+            document.getElementById('sim-bank-badge').innerText = selectedBank === 'all' ? '綜合公股行庫' : selectedBank;
+            
+            loadSimQuestion();
+        }
+
+        function loadSimQuestion() {
+            const q = simQuestions[simCurrentIndex];
+            document.getElementById('sim-progress-text').innerText = `問題 ${simCurrentIndex + 1} / ${simQuestions.length}`;
+            document.getElementById('sim-q-cat').innerText = q.categoryLabel;
+            document.getElementById('sim-q-banks').innerText = `常考行庫：${q.banks.slice(0, 3).join('、')}`;
+            document.getElementById('sim-q-title').innerText = `「${q.title}」`;
+            document.getElementById('sim-q-intent').innerText = q.intent;
+
+            // Render STAR & Sample Answer (with Safety Null Check)
+            const starContainer = document.getElementById('sim-star-content');
+            if (starContainer) {
+                starContainer.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-900/40 rounded-lg border border-blue-700/50 text-xs sm:text-sm text-slate-200">
+                            <strong class="text-emerald-300 block mb-1">💡 示範回答精華：</strong>
+                            ${q.sampleAnswer}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Reset Accordions
+            document.getElementById('sim-intent-body').classList.add('hidden');
+            const intentIcon = document.getElementById('sim-intent-icon');
+            if (intentIcon) intentIcon.style.transform = 'rotate(0deg)';
+
+            const hintBody = document.getElementById('sim-hint-body');
+            if (hintBody) hintBody.classList.add('hidden');
+            const hintIcon = document.getElementById('sim-hint-icon');
+            if (hintIcon) hintIcon.style.transform = 'rotate(0deg)';
+
+            // Reset Rating Stars
+            updateStarDisplay(0);
+
+            // Reset Recording UI & Audio
+            stopRecordingIfActive();
+            document.getElementById('audio-playback-container').classList.add('hidden');
+            document.getElementById('recording-status').innerText = '點擊紅色麥克風開始錄音';
+
+            // Reset & Start Timer (1 min per question)
+            resetTimer(60);
+            startTimer();
+        }
+
+        function toggleSimIntentDetail(btn) {
+            const body = document.getElementById('sim-intent-body');
+            const icon = document.getElementById('sim-intent-icon');
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                body.classList.add('hidden');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleSimHint() {
+            const body = document.getElementById('sim-hint-body');
+            const icon = document.getElementById('sim-hint-icon');
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                body.classList.add('hidden');
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        /* TIMER CONTROLS */
+        function startTimer() {
+            clearInterval(simTimerInterval);
+            simIsTimerRunning = true;
+            updateTimerToggleIcon();
+            simTimerInterval = setInterval(() => {
+                if (simTimeRemaining > 0) {
+                    simTimeRemaining--;
+                    renderTimerDisplay();
+                } else {
+                    clearInterval(simTimerInterval);
+                    simIsTimerRunning = false;
+                    updateTimerToggleIcon();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(simTimerInterval);
+            simIsTimerRunning = false;
+            updateTimerToggleIcon();
+        }
+
+        function toggleTimer() {
+            if (simIsTimerRunning) {
+                pauseTimer();
+            } else {
+                if (simTimeRemaining > 0) startTimer();
+            }
+        }
+
+        function resetTimer(seconds = 60) {
+            pauseTimer();
+            simTimeRemaining = seconds;
+            renderTimerDisplay();
+        }
+
+        function restartTimer() {
+            resetTimer(60);
+            startTimer();
+        }
+
+        function renderTimerDisplay() {
+            const mins = Math.floor(simTimeRemaining / 60);
+            const secs = simTimeRemaining % 60;
+            document.getElementById('sim-timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerToggleIcon() {
+            const icon = document.getElementById('sim-timer-toggle-icon');
+            if (icon) {
+                icon.className = simIsTimerRunning ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            }
+        }
+
+        /* RATING & NEXT QUESTION */
+        function rateSelf(score) {
+            simRatings[simCurrentIndex] = score;
+            updateStarDisplay(score);
+        }
+
+        function updateStarDisplay(score) {
+            const starsContainer = document.getElementById('rating-stars');
+            const stars = starsContainer.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if (index < score) {
+                    star.className = 'fa-solid fa-star text-amber-400';
+                } else {
+                    star.className = 'fa-regular fa-star text-slate-300';
+                }
+            });
+        }
+
+        function nextSimQuestion() {
+            if (simCurrentIndex < simQuestions.length - 1) {
+                simCurrentIndex++;
+                loadSimQuestion();
+                // 切換下一題時平滑滾動回到模擬面試卡片頂部
+                const activeCard = document.getElementById('sim-active-card');
+                if (activeCard) {
+                    activeCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                finishSimulation();
+            }
+        }
+
+        function abortSimulation() {
+            pauseTimer();
+            stopRecordingIfActive();
+            document.getElementById('sim-active-card').classList.add('hidden');
+            document.getElementById('sim-setup-card').classList.remove('hidden');
+        }
+
+        function finishSimulation() {
+            pauseTimer();
+            stopRecordingIfActive();
+            document.getElementById('sim-active-card').classList.add('hidden');
+            document.getElementById('sim-summary-card').classList.remove('hidden');
+
+            document.getElementById('summary-total-q').innerText = simQuestions.length;
+            const validScores = simRatings.filter(r => r > 0);
+            const avg = validScores.length > 0 ? (validScores.reduce((a, b) => a + b, 0) / validScores.length).toFixed(1) : '無';
+            document.getElementById('summary-avg-score').innerText = avg === '無' ? '未評分' : `${avg} / 5`;
+        }
+
+        function resetSimulation() {
+            document.getElementById('sim-summary-card').classList.add('hidden');
+            document.getElementById('sim-setup-card').classList.remove('hidden');
+        }
+
+        /* ================= BUILT-IN AUDIO RECORDING LOGIC ================= */
+        function toggleBuiltInRecording() {
+            if (isRecording) {
+                stopBuiltInRecording();
+            } else {
+                startBuiltInRecording();
+            }
+        }
+
+        function startBuiltInRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('您的瀏覽器不支援錄音功能，請更換 Chrome 或 Edge 瀏覽器。');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    audioChunks = [];
+                    if (window.RecordRTC) {
+                        recordRtcInstance = new RecordRTC(stream, { type: 'audio' });
+                        recordRtcInstance.startRecording();
+                    } else {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.ondataavailable = e => {
+                            if (e.data.size > 0) audioChunks.push(e.data);
+                        };
+                        mediaRecorder.onstop = () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            const player = document.getElementById('audio-playback');
+                            player.src = audioUrl;
+                            document.getElementById('audio-playback-container').classList.remove('hidden');
+                        };
+                        mediaRecorder.start();
+                    }
+
+                    isRecording = true;
+                    const micBtn = document.getElementById('mic-record-btn');
+                    micBtn.classList.add('recording-pulse', 'bg-rose-700');
+                    document.getElementById('recording-status').innerText = '🎙️ 錄音中... 再次點擊麥克風停止錄音';
+                })
+                .catch(err => {
+                    console.error('無法取得麥克風權限:', err);
+                    alert('無法讀取麥克風，請確認已授予網站麥克風存取權限。');
+                });
+        }
+
+        function stopBuiltInRecording() {
+            if (!isRecording) return;
+
+            if (recordRtcInstance) {
+                recordRtcInstance.stopRecording(() => {
+                    const audioBlob = recordRtcInstance.getBlob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const player = document.getElementById('audio-playback');
+                    player.src = audioUrl;
+                    document.getElementById('audio-playback-container').classList.remove('hidden');
+                    
+                    // Stop tracks
+                    const stream = recordRtcInstance.getInternalRecorder().stream;
+                    if (stream) stream.getTracks().forEach(track => track.stop());
+                });
+            } else if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+
+            isRecording = false;
+            const micBtn = document.getElementById('mic-record-btn');
+            micBtn.classList.remove('recording-pulse', 'bg-rose-700');
+            document.getElementById('recording-status').innerText = '✅ 錄音完畢！可點擊下方播放器進行試聽回放';
+        }
+
+        function stopRecordingIfActive() {
+            if (isRecording) {
+                stopBuiltInRecording();
+            }
+        }
+
+        /* ================= PAGE 3: BANK STRATEGY RENDER LOGIC ================= */
+        function renderBankProfiles() {
+            const container = document.getElementById('banks-grid');
+            if (!container) return;
+
+            container.innerHTML = '';
+            BANK_PROFILES.forEach(bank => {
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl shadow-sm border-t-4 ${bank.color} p-5 space-y-4 hover:shadow-md transition-all flex flex-col justify-between`;
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-lg text-slate-900">${bank.name}</h3>
+                        </div>
+                        <span class="inline-block text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
+                            ${bank.tag}
+                        </span>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            ${bank.desc}
+                        </p>
+                        
+                        <!-- 柔和綠色背景與文字優化 -->
+                        <div class="bg-emerald-50/60 p-3 rounded-lg border border-emerald-200/60 space-y-1">
+                            <span class="text-xs font-bold text-emerald-800 flex items-center mb-1">
+                                <i class="fa-solid fa-gift mr-1.5 text-emerald-600"></i>福利待遇亮點：
+                            </span>
+                            <ul class="text-xs text-emerald-700 space-y-1 list-disc list-inside font-medium">
+                                ${bank.benefits.map(b => `<li>${b}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 block mb-1">🎯 面試必考核心：</span>
+                            <div class="flex flex-wrap gap-1">
+                                ${bank.keyTopics.map(t => `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] font-medium rounded">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100">
+                        <button onclick="startSpecificBankSim('${bank.name}')" class="w-full py-2 ${bank.btnColor} text-white font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-play"></i>
+                            <span>進行 ${bank.name} 專屬模擬演練</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function startSpecificBankSim(bankName) {
+            switchTab('interview-sim');
+            const select = document.getElementById('sim-bank-select');
+            if (select) {
+                select.value = bankName;
+            }
+            startSimulation();
+        }
+    </script>
+</body>
+</html>
